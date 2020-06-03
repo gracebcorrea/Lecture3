@@ -1,7 +1,14 @@
 import csv
+import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+engine = creage_engine(os.getenv("DATABASE_URL"))
+db =scoped_session(sessionmaker(bind=engine))
 
   # same import and setup statements as above
-
+def main():
   f = open("flights.csv")
   reader = csv.reader(f)
   for origin, destination, duration in reader: # loop gives each column a name
@@ -9,3 +16,6 @@ import csv
                   {"origin": origin, "destination": destination, "duration": duration}) # substitute values from CSV line into SQL command, as per this dict
       print(f"Added flight from {origin} to {destination} lasting {duration} minutes.")
   db.commit() # transactions are assumed, so close the transaction finished
+
+if __name__ == "__main__":
+    main()
