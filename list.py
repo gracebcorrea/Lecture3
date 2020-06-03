@@ -12,5 +12,5 @@ import os
   for flight in flights
       print(f"{flight.origin} to {flight.destination}, {flight.duration} minutes.") # for every flight, print out the flight info
 
-  if __name__ == "__main__"
+  if __name__ == "__main__":
       main()
