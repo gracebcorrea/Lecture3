@@ -10,11 +10,25 @@ db =scoped_session(sessionmaker(bind=engine))
   # same import and setup statements as above
 def main():
     #list all flights
-    flights = db.execute("SELECT id, origin, destination, duration FROM flight ")
+    flights = db.execute("SELECT id, origin, destination, duration FROM flight "),fetchall()
     for flight in flights:
-        print("Flight {flight,db}: {flight.origin} to {flight.destination},")
+        print(f"Flight {flight.id}: {flight.origin} to {flight.destination}, {flight.duration} minutes")
 
     #Prompt user to choose a flight.
     flight_id = int(input("\nFlight ID:"))
-    flight = db.execute("SELECT origin, destination, duration FROM flights WHERE ")
+    flight = db.execute("SELECT origin, destination, duration FROM flights WHERE id = :id ", )
                         {"id": flight_id}).fetchone()
+
+    #make sure the flight is valid
+    if flight is None:
+        print("Error: No such flight.")
+        return
+
+    #List passengers
+    passengers = db.execute("SELECT name FROM passengers WHERE flight_id = :flight_id",
+                            {"flight_id": flight_id}).fetchall()
+    print("\nPassengers:")
+    for passenger in passengers:
+        print(passenger.name)
+    if len(passengers) == o:
+        print("no passengers.")                            
