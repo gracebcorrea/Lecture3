@@ -2,9 +2,13 @@ import csv
 import os
 
 from flask import Flask, render_template, request, url_for, redirect, session
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+
+engine = create_engine(os.getenv("DATABASE_URL"))
+db = scoped_session(sessionmaker(bind=engine))
+
+app = Flask (__name__)
 
 @app.route("/")
   def index():
@@ -27,3 +31,26 @@ from sqlalchemy.orm import scoped_session, sessionmaker
               {"name": name, "flight_id": flight_id})
       db.commit()
       return render_template("success.html")
+
+
+
+      @app.route("/flights")
+def flights():
+    """List all flights."""
+    flights = db.execute("SELECT * FROM flights").fetchall()
+    return render_template("flights.html", flights=flights)
+
+
+@app.route("/flights/<int:flight_id>")
+def flight(flight_id):
+    """List details about a single flight."""
+
+    # Make sure flight exists.
+    flight = db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).fetchone()
+    if flight is None:
+        return render_template("error.html", message="No such flight.")
+
+    # Get all passengers.
+    passengers = db.execute("SELECT name FROM passengers WHERE flight_id = :flight_id",
+                            {"flight_id": flight_id}).fetchall()
+    return render_template("flight.html", flight=flight, passengers=passengers)
